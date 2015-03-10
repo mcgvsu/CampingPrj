@@ -21,6 +21,7 @@ public class Site implements Serializable {
 	/** the Site number */
 	protected int siteNumber;
 
+	//TODO finish this 
 	public Site() {
 	}
 
