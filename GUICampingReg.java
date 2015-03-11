@@ -87,16 +87,16 @@ public class GUICampingReg extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == openSerialMenu) {
-
+			//TODO open serial file
 		}
 		if (e.getSource() == saveSerialMenu) {
-
+			//TODO save serial file
 		}
 		if (e.getSource() == openTextMenu) {
-
+			//TODO open text file
 		}
 		if (e.getSource() == saveTextMenu) {
-
+			//TODO save text file
 		}
 		if (e.getSource() == exitMenu) 
 			System.exit(0);
@@ -122,11 +122,13 @@ public class GUICampingReg extends JFrame implements ActionListener {
 				tableModel.addSite(unit);
 			}
 		}
+		
+		//TODO make check out menu dependent on Site type
 		if (e.getSource() == checkOutTentMenu) {
-
+			//TODO remove Site + pop up with payment info
 		}
 		if (e.getSource() == checkOutRVMenu) {
-
+			//TODO remove Site + pop up with payment info
 		}
 	}
 
