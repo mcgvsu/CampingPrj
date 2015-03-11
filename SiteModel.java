@@ -37,7 +37,7 @@ public class SiteModel extends AbstractTableModel {
 				return ("Power: " + ((RV) siteList.get(row)).getPower());
 
 			else
-				return ("Occupants: " + ((Tent) siteList.get(row)).getSiteNumber());
+				return ("Occupants: " + ((Tent) siteList.get(row)).getNumOfTenters());
 		default:
 			return null;
 		}
