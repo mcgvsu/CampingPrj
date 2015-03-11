@@ -26,4 +26,6 @@ public class RV extends Site{
 	public void setPower(int power) {
 		this.power = power;
 	}
+	
+	//TODO add getCost method
 }
