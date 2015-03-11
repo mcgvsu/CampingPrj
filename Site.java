@@ -74,4 +74,6 @@ public class Site implements Serializable {
 	public void setSiteNumber(int siteNumber) {
 		this.siteNumber = siteNumber;
 	}
+	
+	//TODO add abstract getCost method
 }
