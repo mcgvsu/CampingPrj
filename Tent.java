@@ -26,4 +26,6 @@ public class Tent extends Site{
 	public void setNumOfTenters(int numOfTenters) {
 		this.numOfOccupants = numOfTenters;
 	}
+	
+	//TODO add getCost method
 }
