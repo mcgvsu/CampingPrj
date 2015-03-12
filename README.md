@@ -1,12 +1,14 @@
 # CampingPrj
-camping registration 
+Camping Registration 
 
 Text File Saving
 
-Binary Saving
+Check out for RV - more specific cost formula in regards to power level -- MAYBE?
 
-Check out for RV - more specific cost formula in regards to power level
+Step 10: Message if all sites occupied -- We need to decided on a max number of sites. 10-20?
 
-status function
+Status Function
 
 Sorting
+
+Function of our choice
