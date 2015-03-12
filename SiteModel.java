@@ -62,4 +62,8 @@ public class SiteModel extends AbstractTableModel {
 		siteList.add(inputSite);
 		fireTableRowsInserted(0, siteList.size());
 	}
+	
+	public Object getObject(int i) {
+		return siteList.get(i);
+	}
 }
