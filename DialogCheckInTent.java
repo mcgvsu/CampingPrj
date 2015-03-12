@@ -7,12 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 public class DialogCheckInTent extends JDialog implements ActionListener {
 	private static final long serialVersionUID = 1L;
@@ -73,13 +68,32 @@ public class DialogCheckInTent extends JDialog implements ActionListener {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 			Date date;
 			try {
+				//parses date, throws exception if parse fails
 				date = dateFormat.parse(occupiedOnTxt.getText());
 				GregorianCalendar occupiedDate = new GregorianCalendar();
 				occupiedDate.setTime(date);
+
+				//parses for name, throws exception if anything
+				//but letters are in string
 				String name = nameText.getText();
+				if (!name.matches("[a-zA-Z]+"))
+					throw new ParseException("Name error - not letters", 1);
+
+				//parses for site#, throws exception if less than 1
 				int siteNum = Integer.parseInt(siteNumberTxt.getText());
+				if (siteNum < 1)
+					throw new ParseException("Site error", 1);
+
+				//parses for reservation day amount, throws exception if less than 1
 				int reservDays = Integer.parseInt(numOfDaysReservingTxt.getText());
+				if (reservDays < 1)
+					throw new ParseException("Reservation error", 1);
+
+				//parses for tenters, throws exception if not 30 40 or 50
 				int numTenters = Integer.parseInt(numOfTentersTxt.getText());
+				if (numTenters < 1)
+					throw new ParseException("Tenters error", 1);
+
 				unit.setCheckIn(occupiedDate);
 				unit.setNameReserving(name);
 				unit.setSiteNumber(siteNum);
@@ -87,8 +101,13 @@ public class DialogCheckInTent extends JDialog implements ActionListener {
 				unit.setNumOfTenters(numTenters);
 				dispose();
 			}
-			catch(ParseException ex) {
-				ex.printStackTrace();
+			catch(ParseException ex1) {
+				JOptionPane.showMessageDialog(null, "Input Error",
+						"Input Error", JOptionPane.ERROR_MESSAGE);
+			}
+			catch(NumberFormatException ex2) {
+				JOptionPane.showMessageDialog(null, "Input Error",
+						"Input Error", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		if (e.getSource() == cancelButton) {
