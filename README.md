@@ -1,13 +1,11 @@
 # CampingPrj
 camping registration 
 
-Check in tent
-
 Text File Saving
 
 Binary Saving
 
-Checking out + get Cost
+Check out for RV - more specific cost formula in regards to power level
 
 status function
 
