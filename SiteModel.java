@@ -1,7 +1,9 @@
 package package1;
 
+import java.io.*;
 import java.text.DateFormat;
 import java.util.ArrayList;
+
 import javax.swing.table.AbstractTableModel;
 
 public class SiteModel extends AbstractTableModel {
@@ -65,5 +67,36 @@ public class SiteModel extends AbstractTableModel {
 	
 	public Object getObject(int i) {
 		return siteList.get(i);
+	}
+	
+	public boolean checkSite(int n) {
+		for (int i = 0; i < siteList.size();) {
+			if (siteList.get(i).getSiteNumber() == n)
+				return false;
+		}
+		return true;
+	}
+	
+	public void saveDB(String filename) {
+		try {
+			FileOutputStream fo = new FileOutputStream(filename);
+			ObjectOutputStream oo = new ObjectOutputStream(fo);
+			oo.writeObject(siteList);
+			oo.close();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	public void loadDB(String filename) {
+		try {
+			FileInputStream fi = new FileInputStream(filename);
+			ObjectInputStream oi = new ObjectInputStream(fi);
+			siteList = (ArrayList<Site>) oi.readObject();
+			fireTableRowsInserted(0, siteList.size() -1);
+			oi.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 }
