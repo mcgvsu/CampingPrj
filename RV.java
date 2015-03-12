@@ -26,6 +26,10 @@ public class RV extends Site{
 	public void setPower(int power) {
 		this.power = power;
 	}
-	
-	//TODO add getCost method
+
+	@Override
+	public double getCost() {
+		return (30 * daysStaying);
+		//TODO more specific formula in regards to power level?
+	}
 }
