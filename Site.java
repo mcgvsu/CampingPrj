@@ -3,7 +3,7 @@ package package1;
 import java.io.Serializable;
 import java.util.GregorianCalendar;
 
-public class Site implements Serializable {
+public abstract class Site implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** the name of the person occupying the Site */
@@ -21,7 +21,6 @@ public class Site implements Serializable {
 	/** the Site number */
 	protected int siteNumber;
 
-	//TODO finish this 
 	public Site() {
 	}
 
@@ -75,5 +74,5 @@ public class Site implements Serializable {
 		this.siteNumber = siteNumber;
 	}
 	
-	//TODO add abstract getCost method
+	public abstract double getCost();
 }
