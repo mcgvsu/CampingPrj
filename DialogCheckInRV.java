@@ -32,7 +32,7 @@ public class DialogCheckInRV extends JDialog implements ActionListener{
 		panel = new JPanel();
 		panel.setLayout(new GridLayout(6, 2));
 		nameLabel = new JLabel("Name: ");
-		nameText = new JTextField("Me",5);
+		nameText = new JTextField();
 		occupiedOnLabel = new JLabel("Occupied on (DD/MM/YYYY): ");
 		occupiedOnTxt = new JTextField();
 		siteNumberLabel = new JLabel("Requested site number: ");
@@ -72,12 +72,11 @@ public class DialogCheckInRV extends JDialog implements ActionListener{
 				GregorianCalendar occupiedDate = new GregorianCalendar();
 				occupiedDate.setTime(date);
 
-				//parses for name, throws exception if contains numbers
-				//TODO throw exception if contains anything but letters
+				//parses for name, throws exception if anything
+				//but letters are in string
 				String name = nameText.getText();
-				if (name.contains("[0-9]"))
-					throw new ParseException("Name error - numbers", 1);
-				
+				if (!name.matches("[a-zA-Z]+"))
+					throw new ParseException("Name error - not letters", 1);
 
 				//parses for site#, throws exception if less than 1
 				int siteNum = Integer.parseInt(siteNumberTxt.getText());
@@ -91,9 +90,7 @@ public class DialogCheckInRV extends JDialog implements ActionListener{
 
 				//parses for power, throws exception if not 30 40 or 50
 				int powerNum = Integer.parseInt(powerTxt.getText());
-				if (powerNum == 30 || powerNum == 40 || powerNum == 50)
-					System.out.println("works");
-				else
+				if (!(powerNum == 30 || powerNum == 40 || powerNum == 50))
 					throw new ParseException("Power error", 1);
 
 				unit.setCheckIn(occupiedDate);
