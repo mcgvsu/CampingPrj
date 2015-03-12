@@ -16,15 +16,15 @@ public class GUICampingReg extends JFrame implements ActionListener {
 	private JMenu checkOutMenu;
 	
 	//file menu
-	private JMenuItem openSerialMenu;
-	private JMenuItem saveSerialMenu;
-	private JMenuItem openTextMenu;
-	private JMenuItem saveTextMenu;
-	private JMenuItem exitMenu;
+	private JMenuItem openSerialItem;
+	private JMenuItem saveSerialItem;
+	private JMenuItem openTextItem;
+	private JMenuItem saveTextItem;
+	private JMenuItem exitItem;
 	
 	//check in menu
-	private JMenuItem checkInTentMenu;
-	private JMenuItem checkInRVMenu;
+	private JMenuItem checkInTentItem;
+	private JMenuItem checkInRVItem;
 	
 	//check out menu
 	private JMenuItem checkOutItem;
@@ -41,32 +41,32 @@ public class GUICampingReg extends JFrame implements ActionListener {
 		fileMenu = new JMenu("File");
 		checkInMenu = new JMenu("Check in");
 		checkOutMenu = new JMenu("Check out");
-		openSerialMenu = new JMenuItem("Open serial...");
-		openSerialMenu.addActionListener(this);
-		saveSerialMenu = new JMenuItem("Save serial...");
-		saveSerialMenu.addActionListener(this);
-		openTextMenu = new JMenuItem("Open text...");
-		openTextMenu.addActionListener(this);
-		saveTextMenu = new JMenuItem("Save text...");
-		saveTextMenu.addActionListener(this);
-		exitMenu =  new JMenuItem("Exit");
-		exitMenu.addActionListener(this);
-		checkInTentMenu = new JMenuItem("Check in Tent...");
-		checkInTentMenu.addActionListener(this);
-		checkInRVMenu = new JMenuItem("Check in RV...");
-		checkInRVMenu.addActionListener(this);
+		openSerialItem = new JMenuItem("Open serial...");
+		openSerialItem.addActionListener(this);
+		saveSerialItem = new JMenuItem("Save serial...");
+		saveSerialItem.addActionListener(this);
+		openTextItem = new JMenuItem("Open text...");
+		openTextItem.addActionListener(this);
+		saveTextItem = new JMenuItem("Save text...");
+		saveTextItem.addActionListener(this);
+		exitItem =  new JMenuItem("Exit");
+		exitItem.addActionListener(this);
+		checkInTentItem = new JMenuItem("Check in Tent...");
+		checkInTentItem.addActionListener(this);
+		checkInRVItem = new JMenuItem("Check in RV...");
+		checkInRVItem.addActionListener(this);
 		checkOutItem = new JMenuItem("Check out...");
 		checkOutItem.addActionListener(this);
 		menubar.add(fileMenu);
-		fileMenu.add(openSerialMenu);
-		fileMenu.add(saveSerialMenu);
+		fileMenu.add(openSerialItem);
+		fileMenu.add(saveSerialItem);
 		fileMenu.addSeparator();
-		fileMenu.add(openTextMenu);
-		fileMenu.add(saveTextMenu);
+		fileMenu.add(openTextItem);
+		fileMenu.add(saveTextItem);
 		fileMenu.addSeparator();
-		fileMenu.add(exitMenu);
-		checkInMenu.add(checkInTentMenu);
-		checkInMenu.add(checkInRVMenu);
+		fileMenu.add(exitItem);
+		checkInMenu.add(checkInTentItem);
+		checkInMenu.add(checkInRVItem);
 		checkOutMenu.add(checkOutItem);
 		menubar.add(checkInMenu);
 		menubar.add(checkOutMenu);
@@ -81,44 +81,63 @@ public class GUICampingReg extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == openSerialMenu) {
-			//TODO open serial file
+		if (e.getSource() == openSerialItem) {
+			tableModel.saveDB("reservations");
 		}
-		if (e.getSource() == saveSerialMenu) {
-			//TODO save serial file
+		if (e.getSource() == saveSerialItem) {
+			tableModel.loadDB("reservations");
 		}
-		if (e.getSource() == openTextMenu) {
+		if (e.getSource() == openTextItem) {
 			//TODO open text file
 		}
-		if (e.getSource() == saveTextMenu) {
+		if (e.getSource() == saveTextItem) {
 			//TODO save text file
 		}
-		if (e.getSource() == exitMenu) 
+		if (e.getSource() == exitItem) 
 			System.exit(0);
-		if (e.getSource() == checkInTentMenu) {
+		
+		if (e.getSource() == checkInTentItem) {
 			//creates new Tent object
 			Tent unit = new Tent();
 			//creates new Dialog for Tent, sends Tent object to Dialog
-			DialogCheckInTent tentDialog = new DialogCheckInTent(this, unit);
+			DialogCheckInTent tentDialog = 
+					new DialogCheckInTent(this, unit);
 			tentDialog.setVisible(true);
-			//if "okButton" has been clicked, add the Tent object to the table
+			//if ok has been clicked, add the Tent object to the table
 			if (tentDialog.getCloseStatus() == 1) {
-				tableModel.addSite(unit);
+				if (tableModel.checkSite(unit.getSiteNumber())) {
+					tableModel.addSite(unit);
+					JOptionPane.showMessageDialog(null,"Estimated cost:"
+							+ "$" + unit.getCost(), "Estimated Cost",
+							JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					JOptionPane.showMessageDialog(null, "Sorry, "
+							+ "this site is occupied.");
+				}
 			}
-			//TODO block check-ins to same site
 		}
-		if (e.getSource() == checkInRVMenu) {
+		if (e.getSource() == checkInRVItem) {
 			//creates new RV object
 			RV unit = new RV();
 			//creates new Dialog for RV, sends RV object to Dialog
 			DialogCheckInRV RVDialog = new DialogCheckInRV(this, unit);
 			RVDialog.setVisible(true);
-			//if "okButton" has been clicked, add the RV object to the table
+			//if ok has been clicked, add the RV object to the table
 			if (RVDialog.getCloseStatus() == 1) {
-				tableModel.addSite(unit);
+				if (tableModel.checkSite(unit.getSiteNumber())) {
+					tableModel.addSite(unit);
+					JOptionPane.showMessageDialog(null,"Estimated cost:"
+							+ "$" + unit.getCost(), "Estimated Cost",
+							JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					JOptionPane.showMessageDialog(null, "Sorry, "
+							+ "this site is occupied.");
+				}
 			}
-			//TODO block check-ins to same site
 		}
+		
+		//TODO Calculate actual cost of stay when checkout
+		//by using a dialog box to input actual checkout day
 		if (e.getSource() == checkOutItem) {
 			int index = table.getSelectedRow();
 			Site tempSite = (Site) tableModel.getObject(index);
