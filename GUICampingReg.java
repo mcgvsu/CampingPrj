@@ -7,7 +7,6 @@ import javax.swing.*;
 public class GUICampingReg extends JFrame implements ActionListener {
 	
 	private static final long serialVersionUID = 1L;
-	private JFrame frame;
 	
 	private JMenuBar menubar;
 	
@@ -28,8 +27,7 @@ public class GUICampingReg extends JFrame implements ActionListener {
 	private JMenuItem checkInRVMenu;
 	
 	//check out menu
-	private JMenuItem checkOutTentMenu;
-	private JMenuItem checkOutRVMenu;
+	private JMenuItem checkOutItem;
 	
 	//table stuff
 	private JTable table;
@@ -37,8 +35,8 @@ public class GUICampingReg extends JFrame implements ActionListener {
 	private JScrollPane scrollPane;
 
 	public void createGUI() {
-		frame = new JFrame("Reservations");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle("Reservations");
 		menubar = new JMenuBar();
 		fileMenu = new JMenu("File");
 		checkInMenu = new JMenu("Check in");
@@ -57,10 +55,8 @@ public class GUICampingReg extends JFrame implements ActionListener {
 		checkInTentMenu.addActionListener(this);
 		checkInRVMenu = new JMenuItem("Check in RV...");
 		checkInRVMenu.addActionListener(this);
-		checkOutTentMenu = new JMenuItem("Check out Tent...");
-		checkOutTentMenu.addActionListener(this);
-		checkOutRVMenu = new JMenuItem("Check out RV...");
-		checkOutRVMenu.addActionListener(this);
+		checkOutItem = new JMenuItem("Check out...");
+		checkOutItem.addActionListener(this);
 		menubar.add(fileMenu);
 		fileMenu.add(openSerialMenu);
 		fileMenu.add(saveSerialMenu);
@@ -71,17 +67,16 @@ public class GUICampingReg extends JFrame implements ActionListener {
 		fileMenu.add(exitMenu);
 		checkInMenu.add(checkInTentMenu);
 		checkInMenu.add(checkInRVMenu);
-		checkOutMenu.add(checkOutTentMenu);
-		checkOutMenu.add(checkOutRVMenu);
+		checkOutMenu.add(checkOutItem);
 		menubar.add(checkInMenu);
 		menubar.add(checkOutMenu);
 		tableModel = new SiteModel();
 		table = new JTable(tableModel);
 		scrollPane = new JScrollPane(table);
-		frame.add(scrollPane);
-		frame.setJMenuBar(menubar);
-		frame.setSize(500, 200);
-		frame.setVisible(true);
+		add(scrollPane);
+		setJMenuBar(menubar);
+		setSize(500, 200);
+		setVisible(true);
 	}
 
 	@Override
@@ -110,6 +105,7 @@ public class GUICampingReg extends JFrame implements ActionListener {
 			if (tentDialog.getCloseStatus() == 1) {
 				tableModel.addSite(unit);
 			}
+			//TODO block check-ins to same site
 		}
 		if (e.getSource() == checkInRVMenu) {
 			//creates new RV object
@@ -121,14 +117,16 @@ public class GUICampingReg extends JFrame implements ActionListener {
 			if (RVDialog.getCloseStatus() == 1) {
 				tableModel.addSite(unit);
 			}
+			//TODO block check-ins to same site
 		}
-		
-		//TODO make check out menu dependent on Site type
-		if (e.getSource() == checkOutTentMenu) {
-			//TODO remove Site + pop up with payment info
-		}
-		if (e.getSource() == checkOutRVMenu) {
-			//TODO remove Site + pop up with payment info
+		if (e.getSource() == checkOutItem) {
+			int index = table.getSelectedRow();
+			Site tempSite = (Site) tableModel.getObject(index);
+			JOptionPane.showMessageDialog(null,
+					("Payment due: $" + tempSite.getCost()),
+					"Payment due!",
+					JOptionPane.INFORMATION_MESSAGE);
+			tableModel.removeSite(index);
 		}
 	}
 
