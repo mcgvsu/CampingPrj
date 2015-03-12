@@ -70,7 +70,7 @@ public class SiteModel extends AbstractTableModel {
 	}
 	
 	public boolean checkSite(int n) {
-		for (int i = 0; i < siteList.size();) {
+		for (int i = 0; i < siteList.size(); i++) {
 			if (siteList.get(i).getSiteNumber() == n)
 				return false;
 		}
