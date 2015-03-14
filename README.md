@@ -3,12 +3,14 @@ Camping Registration
 
 Text File Saving
 
-Check out for RV - more specific cost formula in regards to power level -- MAYBE?
-
-Step 10: Message if all sites occupied -- We need to decided on a max number of sites. 10-20?
-
-Status Function
-
 Sorting
 
 Function of our choice
+
+----------------------
+
+I added a new class DialogGetDateStatus that you'll need.
+
+Check-out + status work as far as I know. I'll be testing it more for sure.
+
+DialogCheckInTent might not work correctly, because I've mainly been working with DialogCheckInRV.
