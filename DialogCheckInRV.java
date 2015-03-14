@@ -32,15 +32,15 @@ public class DialogCheckInRV extends JDialog implements ActionListener{
 		panel = new JPanel();
 		panel.setLayout(new GridLayout(6, 2));
 		nameLabel = new JLabel("Name: ");
-		nameText = new JTextField();
+		nameText = new JTextField("one");
 		occupiedOnLabel = new JLabel("Occupied on (DD/MM/YYYY): ");
-		occupiedOnTxt = new JTextField();
+		occupiedOnTxt = new JTextField("03/13/2015");
 		siteNumberLabel = new JLabel("Requested site number: ");
-		siteNumberTxt = new JTextField();
+		siteNumberTxt = new JTextField("1");
 		numOfDaysReservingLabel = new JLabel("Days reserved: ");
-		numOfDaysReservingTxt = new JTextField();
+		numOfDaysReservingTxt = new JTextField("3");
 		powerLabel = new JLabel("Power usage: ");
-		powerTxt = new JTextField();
+		powerTxt = new JTextField("30");
 		okButton = new JButton("OK");
 		okButton.addActionListener(this);
 		cancelButton = new JButton("Cancel");
@@ -80,7 +80,7 @@ public class DialogCheckInRV extends JDialog implements ActionListener{
 
 				//parses for site#, throws exception if less than 1
 				int siteNum = Integer.parseInt(siteNumberTxt.getText());
-				if (siteNum < 1)
+				if (siteNum < 1 || siteNum > 5)
 					throw new ParseException("Site error", 1);
 
 				//parses for reservation day amount, throws exception if less than 1
