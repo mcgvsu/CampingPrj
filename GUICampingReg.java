@@ -2,33 +2,42 @@ package package1;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 import javax.swing.*;
 
 public class GUICampingReg extends JFrame implements ActionListener {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	private JMenuBar menubar;
-	
+
 	//menus
 	private JMenu fileMenu;
 	private JMenu checkInMenu;
 	private JMenu checkOutMenu;
-	
+	private JMenu statusMenu;
+
 	//file menu
 	private JMenuItem openSerialItem;
 	private JMenuItem saveSerialItem;
 	private JMenuItem openTextItem;
 	private JMenuItem saveTextItem;
 	private JMenuItem exitItem;
-	
+
 	//check in menu
 	private JMenuItem checkInTentItem;
 	private JMenuItem checkInRVItem;
-	
+
 	//check out menu
 	private JMenuItem checkOutItem;
-	
+
+	//status menu
+	private JMenuItem statusItem;
+
 	//table stuff
 	private JTable table;
 	private SiteModel tableModel;
@@ -41,6 +50,7 @@ public class GUICampingReg extends JFrame implements ActionListener {
 		fileMenu = new JMenu("File");
 		checkInMenu = new JMenu("Check in");
 		checkOutMenu = new JMenu("Check out");
+		statusMenu = new JMenu("Status");
 		openSerialItem = new JMenuItem("Open serial...");
 		openSerialItem.addActionListener(this);
 		saveSerialItem = new JMenuItem("Save serial...");
@@ -57,6 +67,8 @@ public class GUICampingReg extends JFrame implements ActionListener {
 		checkInRVItem.addActionListener(this);
 		checkOutItem = new JMenuItem("Check out...");
 		checkOutItem.addActionListener(this);
+		statusItem = new JMenuItem("Check status...");
+		statusItem.addActionListener(this);
 		menubar.add(fileMenu);
 		fileMenu.add(openSerialItem);
 		fileMenu.add(saveSerialItem);
@@ -70,6 +82,8 @@ public class GUICampingReg extends JFrame implements ActionListener {
 		checkOutMenu.add(checkOutItem);
 		menubar.add(checkInMenu);
 		menubar.add(checkOutMenu);
+		statusMenu.add(statusItem);
+		menubar.add(statusMenu);
 		tableModel = new SiteModel();
 		table = new JTable(tableModel);
 		scrollPane = new JScrollPane(table);
@@ -95,57 +109,105 @@ public class GUICampingReg extends JFrame implements ActionListener {
 		}
 		if (e.getSource() == exitItem) 
 			System.exit(0);
-		
+
 		if (e.getSource() == checkInTentItem) {
-			//creates new Tent object
-			Tent unit = new Tent();
-			//creates new Dialog for Tent, sends Tent object to Dialog
-			DialogCheckInTent tentDialog = 
-					new DialogCheckInTent(this, unit);
-			tentDialog.setVisible(true);
-			//if ok has been clicked, add the Tent object to the table
-			if (tentDialog.getCloseStatus() == 1) {
-				if (tableModel.checkSite(unit.getSiteNumber())) {
-					tableModel.addSite(unit);
-					JOptionPane.showMessageDialog(null,"Estimated cost:"
-							+ "$" + unit.getCost(), "Estimated Cost",
-							JOptionPane.INFORMATION_MESSAGE);
-				} else {
-					JOptionPane.showMessageDialog(null, "Sorry, "
-							+ "this site is occupied.");
+			if (tableModel.getRowCount() == 5)
+				JOptionPane.showMessageDialog(null, "All sites are occupied.");
+			else {
+				//creates new Tent object
+				Tent unit = new Tent();
+				//creates new Dialog for Tent, sends Tent object to Dialog
+				DialogCheckInTent tentDialog = 
+						new DialogCheckInTent(this, unit);
+				tentDialog.setVisible(true);
+				//if ok has been clicked, add the Tent object to the table
+				if (tentDialog.getCloseStatus() == 1) {
+					if (tableModel.checkSite(unit.getSiteNumber())) {
+						tableModel.addSite(unit);
+						JOptionPane.showMessageDialog(null,"Estimated cost:"
+								+ "$" + unit.getCost(), "Estimated Cost",
+								JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						JOptionPane.showMessageDialog(null, "Sorry, "
+								+ "this site is occupied.");
+					}
 				}
 			}
 		}
 		if (e.getSource() == checkInRVItem) {
-			//creates new RV object
-			RV unit = new RV();
-			//creates new Dialog for RV, sends RV object to Dialog
-			DialogCheckInRV RVDialog = new DialogCheckInRV(this, unit);
-			RVDialog.setVisible(true);
-			//if ok has been clicked, add the RV object to the table
-			if (RVDialog.getCloseStatus() == 1) {
-				if (tableModel.checkSite(unit.getSiteNumber())) {
-					tableModel.addSite(unit);
-					JOptionPane.showMessageDialog(null,"Estimated cost:"
-							+ "$" + unit.getCost(), "Estimated Cost",
-							JOptionPane.INFORMATION_MESSAGE);
-				} else {
-					JOptionPane.showMessageDialog(null, "Sorry, "
-							+ "this site is occupied.");
+			if (tableModel.getRowCount() == 5)
+				JOptionPane.showMessageDialog(null, "All sites are occupied");
+			else {
+				//creates new RV object
+				RV unit = new RV();
+				//creates new Dialog for RV, sends RV object to Dialog
+				DialogCheckInRV RVDialog = new DialogCheckInRV(this, unit);
+				RVDialog.setVisible(true);
+				//if ok has been clicked, add the RV object to the table
+				if (RVDialog.getCloseStatus() == 1) {
+					if (tableModel.checkSite(unit.getSiteNumber())) {
+						tableModel.addSite(unit);
+						JOptionPane.showMessageDialog(null,"Estimated cost:"
+								+ "$" + unit.getCost(), "Estimated Cost",
+								JOptionPane.INFORMATION_MESSAGE);
+					}
+					else {
+						JOptionPane.showMessageDialog(null,
+								"Sorry, this site is occupied.");
+					}
 				}
 			}
 		}
-		
-		//TODO Calculate actual cost of stay when checkout
-		//by using a dialog box to input actual checkout day
+
 		if (e.getSource() == checkOutItem) {
+			
+			//gets selected Site and creates a temp site equal to that Site
 			int index = table.getSelectedRow();
 			Site tempSite = (Site) tableModel.getObject(index);
-			JOptionPane.showMessageDialog(null,
-					("Payment due: $" + tempSite.getCost()),
-					"Payment due!",
-					JOptionPane.INFORMATION_MESSAGE);
-			tableModel.removeSite(index);
+			
+			//stuff for JOptionPane
+			JTextField dateTxtField = new JTextField(10);
+			JPanel inputDatePanel = new JPanel();
+			inputDatePanel.add(dateTxtField);
+			GregorianCalendar outDate = new GregorianCalendar();
+			
+			int result = JOptionPane.showConfirmDialog(null, inputDatePanel, 
+					"Enter date: ", JOptionPane.OK_CANCEL_OPTION);
+			
+			//only removes Site if input is correct + OK is selected
+			if (result == JOptionPane.OK_OPTION) {
+				SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+				Date date;
+				try {
+					
+					//parses date, throws exception if parse fails
+					date = dateFormat.parse(dateTxtField.getText());
+					outDate.setTime(date);
+					
+					//gets time difference of date checked out vs checked in
+					long diff = outDate.getTimeInMillis() - tempSite.getCheckIn().getTimeInMillis();
+					int days = (int) (diff / (24 * 60 * 60 * 1000));
+					if (days < 0)
+						tempSite.setDaysStaying(0);
+					else
+						tempSite.setDaysStaying(days);
+
+					//outputs actual payment due, then removes Site
+					JOptionPane.showMessageDialog(null,
+							("Payment due: $" + tempSite.getCost()),
+							"Payment due!",
+							JOptionPane.INFORMATION_MESSAGE);
+					tableModel.removeSite(index);
+				}
+				catch (ParseException ex) {
+					JOptionPane.showMessageDialog(null, "Incorrect date input!");
+				}
+			}
+		}
+
+		if (e.getSource() == statusItem) {
+			DialogGetDateStatus DateDialog = new DialogGetDateStatus(this, tableModel.getSiteList());
+			DateDialog.setVisible(true);
 		}
 	}
 
