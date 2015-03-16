@@ -96,43 +96,50 @@ public class GUICampingReg extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == openSerialItem) {
-			tableModel.saveDB("reservations");
+			tableModel.saveDB("res_ser");
 		}
 		if (e.getSource() == saveSerialItem) {
-			tableModel.loadDB("reservations");
+			tableModel.loadDB("res_ser");
 		}
 		if (e.getSource() == openTextItem) {
-			//TODO open text file
+			tableModel.openText("res_text.txt");
 		}
 		if (e.getSource() == saveTextItem) {
-			//TODO save text file
+			tableModel.saveText("res_text.txt");
 		}
 		if (e.getSource() == exitItem) 
 			System.exit(0);
 
 		if (e.getSource() == checkInTentItem) {
 			if (tableModel.getRowCount() == 5)
-				JOptionPane.showMessageDialog(null, "All sites are occupied.");
+				JOptionPane.showMessageDialog(null, "All sites are occupied");
 			else {
-				//creates new Tent object
+				//creates new RV object
 				Tent unit = new Tent();
-				//creates new Dialog for Tent, sends Tent object to Dialog
-				DialogCheckInTent tentDialog = 
-						new DialogCheckInTent(this, unit);
+				//creates new Dialog for RV, sends RV object to Dialog
+				DialogCheckInTent tentDialog = new DialogCheckInTent(this, unit);
 				tentDialog.setVisible(true);
-				//if ok has been clicked, add the Tent object to the table
 				if (tentDialog.getCloseStatus() == 1) {
-					if (tableModel.checkSite(unit.getSiteNumber())) {
+					if (tableModel.checkSite(unit) == false) {
+						if (tableModel.checkDates(unit) == true) {
+							tableModel.addSite(unit);
+							JOptionPane.showMessageDialog(null,"Estimated cost:"
+									+ "$" + unit.getCost(), "Estimated Cost",
+									JOptionPane.INFORMATION_MESSAGE);
+						}
+						else
+							JOptionPane.showMessageDialog(null,
+									"Sorry, this site is occupied.");						
+					}
+					else {
 						tableModel.addSite(unit);
 						JOptionPane.showMessageDialog(null,"Estimated cost:"
 								+ "$" + unit.getCost(), "Estimated Cost",
 								JOptionPane.INFORMATION_MESSAGE);
-					} else {
-						JOptionPane.showMessageDialog(null, "Sorry, "
-								+ "this site is occupied.");
 					}
 				}
 			}
+
 		}
 		if (e.getSource() == checkInRVItem) {
 			if (tableModel.getRowCount() == 5)
@@ -143,47 +150,53 @@ public class GUICampingReg extends JFrame implements ActionListener {
 				//creates new Dialog for RV, sends RV object to Dialog
 				DialogCheckInRV RVDialog = new DialogCheckInRV(this, unit);
 				RVDialog.setVisible(true);
-				//if ok has been clicked, add the RV object to the table
 				if (RVDialog.getCloseStatus() == 1) {
-					if (tableModel.checkSite(unit.getSiteNumber())) {
+					if (tableModel.checkSite(unit) == false) {
+						if (tableModel.checkDates(unit) == true) {
+							tableModel.addSite(unit);
+							JOptionPane.showMessageDialog(null,"Estimated cost:"
+									+ "$" + unit.getCost(), "Estimated Cost",
+									JOptionPane.INFORMATION_MESSAGE);
+						}
+						else
+							JOptionPane.showMessageDialog(null,
+									"Sorry, this site is occupied.");						
+					}
+					else {
 						tableModel.addSite(unit);
 						JOptionPane.showMessageDialog(null,"Estimated cost:"
 								+ "$" + unit.getCost(), "Estimated Cost",
 								JOptionPane.INFORMATION_MESSAGE);
-					}
-					else {
-						JOptionPane.showMessageDialog(null,
-								"Sorry, this site is occupied.");
 					}
 				}
 			}
 		}
 
 		if (e.getSource() == checkOutItem) {
-			
+
 			//gets selected Site and creates a temp site equal to that Site
 			int index = table.getSelectedRow();
 			Site tempSite = (Site) tableModel.getObject(index);
-			
+
 			//stuff for JOptionPane
 			JTextField dateTxtField = new JTextField(10);
 			JPanel inputDatePanel = new JPanel();
 			inputDatePanel.add(dateTxtField);
 			GregorianCalendar outDate = new GregorianCalendar();
-			
+
 			int result = JOptionPane.showConfirmDialog(null, inputDatePanel, 
 					"Enter date: ", JOptionPane.OK_CANCEL_OPTION);
-			
+
 			//only removes Site if input is correct + OK is selected
 			if (result == JOptionPane.OK_OPTION) {
 				SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 				Date date;
 				try {
-					
+
 					//parses date, throws exception if parse fails
 					date = dateFormat.parse(dateTxtField.getText());
 					outDate.setTime(date);
-					
+
 					//gets time difference of date checked out vs checked in
 					long diff = outDate.getTimeInMillis() - tempSite.getCheckIn().getTimeInMillis();
 					int days = (int) (diff / (24 * 60 * 60 * 1000));
