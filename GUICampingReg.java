@@ -1,14 +1,15 @@
 package package1;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
 import javax.swing.*;
+import javax.swing.table.TableCellRenderer;
 
 public class GUICampingReg extends JFrame implements ActionListener {
 
@@ -30,6 +31,7 @@ public class GUICampingReg extends JFrame implements ActionListener {
 	private JMenuItem exitItem;
 	private JMenuItem sortItem;
 
+
 	//check in menu
 	private JMenuItem checkInTentItem;
 	private JMenuItem checkInRVItem;
@@ -44,7 +46,7 @@ public class GUICampingReg extends JFrame implements ActionListener {
 	private JTable table;
 	private SiteModel tableModel;
 	private JScrollPane scrollPane;
-
+		
 	public void createGUI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Reservations");
@@ -91,9 +93,29 @@ public class GUICampingReg extends JFrame implements ActionListener {
 		statusMenu.add(statusItem);
 		menubar.add(statusMenu);
 		tableModel = new SiteModel();
-		table = new JTable(tableModel);
+		
+		table = new JTable(tableModel) {
+			private static final long serialVersionUID = 1L;
+
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+				Component c = super.prepareRenderer(renderer, row, col);
+
+				for (int i = 0; i < table.getRowCount(); i++) {
+					Site tempSite = (Site) tableModel.getObject(i);
+					if (row == i) {
+						if (tempSite instanceof RV) {
+							c.setBackground(Color.LIGHT_GRAY);
+						}
+						else
+							c.setBackground(Color.WHITE);
+					}
+				}
+
+				return c;
+			}
+		};
 		scrollPane = new JScrollPane(table);
-		add(scrollPane);
+		add(scrollPane);		
 		setJMenuBar(menubar);
 		setSize(500, 200);
 		setVisible(true);
@@ -120,9 +142,9 @@ public class GUICampingReg extends JFrame implements ActionListener {
 			if (tableModel.getRowCount() == 5)
 				JOptionPane.showMessageDialog(null, "All sites are occupied");
 			else {
-				//creates new RV object
+				//creates new Tent object
 				Tent unit = new Tent();
-				//creates new Dialog for RV, sends RV object to Dialog
+				//creates new Dialog for Tent, sends Tent object to Dialog
 				DialogCheckInTent tentDialog = new DialogCheckInTent(this, unit);
 				tentDialog.setVisible(true);
 				if (tentDialog.getCloseStatus() == 1) {
@@ -177,6 +199,7 @@ public class GUICampingReg extends JFrame implements ActionListener {
 				}
 			}
 		}
+
 
 		if (e.getSource() == checkOutItem) {
 
