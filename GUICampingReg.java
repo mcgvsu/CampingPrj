@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -27,6 +28,7 @@ public class GUICampingReg extends JFrame implements ActionListener {
 	private JMenuItem openTextItem;
 	private JMenuItem saveTextItem;
 	private JMenuItem exitItem;
+	private JMenuItem sortItem;
 
 	//check in menu
 	private JMenuItem checkInTentItem;
@@ -69,12 +71,16 @@ public class GUICampingReg extends JFrame implements ActionListener {
 		checkOutItem.addActionListener(this);
 		statusItem = new JMenuItem("Check status...");
 		statusItem.addActionListener(this);
+		sortItem = new JMenuItem("Sort by site...");
+		sortItem.addActionListener(this);
 		menubar.add(fileMenu);
 		fileMenu.add(openSerialItem);
 		fileMenu.add(saveSerialItem);
 		fileMenu.addSeparator();
 		fileMenu.add(openTextItem);
 		fileMenu.add(saveTextItem);
+		fileMenu.addSeparator();
+		fileMenu.add(sortItem);
 		fileMenu.addSeparator();
 		fileMenu.add(exitItem);
 		checkInMenu.add(checkInTentItem);
@@ -96,16 +102,16 @@ public class GUICampingReg extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == openSerialItem) {
-			tableModel.saveDB("res_ser");
+			tableModel.saveDB("reservations");
 		}
 		if (e.getSource() == saveSerialItem) {
-			tableModel.loadDB("res_ser");
+			tableModel.loadDB("reservations");
 		}
 		if (e.getSource() == openTextItem) {
-			tableModel.openText("res_text.txt");
+			//TODO open text file
 		}
 		if (e.getSource() == saveTextItem) {
-			tableModel.saveText("res_text.txt");
+			//TODO save text file
 		}
 		if (e.getSource() == exitItem) 
 			System.exit(0);
@@ -221,6 +227,10 @@ public class GUICampingReg extends JFrame implements ActionListener {
 		if (e.getSource() == statusItem) {
 			DialogGetDateStatus DateDialog = new DialogGetDateStatus(this, tableModel.getSiteList());
 			DateDialog.setVisible(true);
+		}
+		
+		if (e.getSource() == sortItem) {
+			tableModel.sortList();
 		}
 	}
 
