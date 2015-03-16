@@ -3,9 +3,7 @@ package package1;
 import java.io.Serializable;
 import java.util.GregorianCalendar;
 
-import javax.swing.JOptionPane;
-
-public abstract class Site implements Serializable, Comparable<Site> {
+public abstract class Site implements Serializable, Comparable<Site>{
 	private static final long serialVersionUID = 1L;
 
 	/** the name of the person occupying the Site */
@@ -23,7 +21,6 @@ public abstract class Site implements Serializable, Comparable<Site> {
 	/** the Site number */
 	protected int siteNumber;
 
-	//TODO finish this 
 	public Site() {
 	}
 
