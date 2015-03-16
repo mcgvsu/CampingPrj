@@ -2,12 +2,10 @@ package package1;
 
 import java.awt.GridLayout;
 import java.awt.event.*;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
 import javax.swing.*;
 
 public class DialogCheckInRV extends JDialog implements ActionListener{
@@ -94,13 +92,6 @@ public class DialogCheckInRV extends JDialog implements ActionListener{
 				int powerNum = Integer.parseInt(powerTxt.getText());
 				if (!(powerNum == 30 || powerNum == 40 || powerNum == 50))
 					throw new ParseException("Power error", 1);
-				
-				//Sets the checkout time to the check-in time plus
-				//number of days staying
-				GregorianCalendar checkOut = new GregorianCalendar();
-				checkOut.setTime(date);
-				checkOut.add(GregorianCalendar.DAY_OF_MONTH, reservDays);
-				unit.setCheckOutOn(checkOut);
 
 				unit.setCheckIn(occupiedDate);
 				unit.setNameReserving(name);
