@@ -3,7 +3,9 @@ package package1;
 import java.io.Serializable;
 import java.util.GregorianCalendar;
 
-public abstract class Site implements Serializable {
+import javax.swing.JOptionPane;
+
+public abstract class Site implements Serializable, Comparable<Site> {
 	private static final long serialVersionUID = 1L;
 
 	/** the name of the person occupying the Site */
@@ -21,6 +23,7 @@ public abstract class Site implements Serializable {
 	/** the Site number */
 	protected int siteNumber;
 
+	//TODO finish this 
 	public Site() {
 	}
 
@@ -75,4 +78,9 @@ public abstract class Site implements Serializable {
 	}
 	
 	public abstract double getCost();
+	
+	public int compareTo(Site n) {
+		int compareSite = n.getSiteNumber();		
+		return this.getSiteNumber() - compareSite;
+	}
 }
