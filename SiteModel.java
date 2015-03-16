@@ -69,20 +69,6 @@ public class SiteModel extends AbstractTableModel {
 	public Object getObject(int i) {
 		return siteList.get(i);
 	}
-	
-	/**
-	 *  Check if dates overlap
-	 *  If checkin time for n is after checkin time for i and before
-	 *  checkout time for n, return false
-	 *  If checkin time for n is after checkin time for i and after
-	 *  checkout time for n, return true
-	 *  
-	 *  
-	 *  TRUE: If in time for n is after in time for i and after out time for i
-	 *  TRUE: If in time for n is before in time for i and out time for n is before in time for i
-	 *  FALSE: If in time for n is before in time for i and out time for n is after out time for i
-	 *  FALSE: If in time for n is after in time for i and before out time for i
-	 */
 		
 	public boolean checkSite(Site n) {
 		int inputSiteNum = n.getSiteNumber();
@@ -110,32 +96,6 @@ public class SiteModel extends AbstractTableModel {
 				if (inN.after(inI) && inN.before(outI))
 					return false;
 			}
-		}
-		return true;
-	}
-	
-	public boolean checkDate(Site n) {
-		GregorianCalendar inN = n.getCheckIn();
-		GregorianCalendar outN = n.getCheckOutOn();
-		for (int i = 0; i < siteList.size(); i++) {
-			if (siteList.get(i).getSiteNumber() == n.getSiteNumber()) {
-				GregorianCalendar inI = siteList.get(i).getCheckIn();
-				GregorianCalendar outI = siteList.get(i).getCheckOutOn();
-
-				if (inN.after(inI) && outN.after(outI))
-					return true;
-				if (inN.after(inI))
-					if (inN.after(outI))
-						return true;
-					else if (inN.before(outI))
-						return false;
-				if (inN.before(inI))
-					if (outN.before(inI))
-						return true;
-					else if (outN.after(outI))
-						return false;
-			}
-			else return false;
 		}
 		return true;
 	}
@@ -236,5 +196,9 @@ public class SiteModel extends AbstractTableModel {
 
 	public ArrayList<Site> getSiteList() {
 		return siteList;
+	}
+	
+	public void sortList() {
+		Collections.sort(siteList);
 	}
 }
