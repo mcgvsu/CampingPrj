@@ -9,9 +9,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import javax.swing.*;
 
-public class DialogCheckInTent extends JDialog 
-	implements ActionListener {
-	
+public class DialogCheckInTent extends JDialog implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private JLabel nameLabel;
 	private JTextField nameText;
@@ -19,8 +17,8 @@ public class DialogCheckInTent extends JDialog
 	private JTextField occupiedOnTxt;
 	private JLabel siteNumberLabel;
 	private JTextField siteNumberTxt;
-	private JLabel daysReservingLabel;
-	private JTextField daysReservingTxt;
+	private JLabel numOfDaysReservingLabel;
+	private JTextField numOfDaysReservingTxt;
 	private JLabel numOfTentersLabel;
 	private JTextField numOfTentersTxt;
 	private JButton okButton;
@@ -40,8 +38,8 @@ public class DialogCheckInTent extends JDialog
 		occupiedOnTxt = new JTextField();
 		siteNumberLabel = new JLabel("Requested site number: ");
 		siteNumberTxt = new JTextField();
-		daysReservingLabel = new JLabel("Days reserved: ");
-		daysReservingTxt = new JTextField();
+		numOfDaysReservingLabel = new JLabel("Days reserved: ");
+		numOfDaysReservingTxt = new JTextField();
 		numOfTentersLabel = new JLabel("Number of occupants: ");
 		numOfTentersTxt = new JTextField();
 		okButton = new JButton("OK");
@@ -54,8 +52,8 @@ public class DialogCheckInTent extends JDialog
 		panel.add(occupiedOnTxt);
 		panel.add(siteNumberLabel);
 		panel.add(siteNumberTxt);
-		panel.add(daysReservingLabel);
-		panel.add(daysReservingTxt);
+		panel.add(numOfDaysReservingLabel);
+		panel.add(numOfDaysReservingTxt);
 		panel.add(numOfTentersLabel);
 		panel.add(numOfTentersTxt);
 		panel.add(okButton);
@@ -67,13 +65,12 @@ public class DialogCheckInTent extends JDialog
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == okButton) {
 			closeStatus = 1;
-			SimpleDateFormat dateFormat = 
-					new SimpleDateFormat("MM/dd/yyyy");
+			SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 			Date date;
 			try {
 				//parses date, throws exception if parse fails
 				date = dateFormat.parse(occupiedOnTxt.getText());
-				GregorianCalendar occupiedDate= new GregorianCalendar();
+				GregorianCalendar occupiedDate = new GregorianCalendar();
 				occupiedDate.setTime(date);
 
 				//parses for name, throws exception if anything
@@ -84,11 +81,11 @@ public class DialogCheckInTent extends JDialog
 
 				//parses for site#, throws exception if less than 1
 				int siteNum = Integer.parseInt(siteNumberTxt.getText());
-				if (siteNum < 1)
+				if (siteNum < 1 || siteNum > 5)
 					throw new ParseException("Site error", 1);
 
 				//parses for reservation day amount, throws exception if less than 1
-				int reservDays = Integer.parseInt(daysReservingTxt.getText());
+				int reservDays = Integer.parseInt(numOfDaysReservingTxt.getText());
 				if (reservDays < 1)
 					throw new ParseException("Reservation error", 1);
 
@@ -96,13 +93,6 @@ public class DialogCheckInTent extends JDialog
 				int numTenters = Integer.parseInt(numOfTentersTxt.getText());
 				if (numTenters < 1)
 					throw new ParseException("Tenters error", 1);
-				
-				//Sets the checkout time to the check-in time plus
-				//number of days staying
-				GregorianCalendar checkOut = new GregorianCalendar();
-				checkOut.setTime(date);
-				checkOut.add(GregorianCalendar.DAY_OF_MONTH, reservDays);
-				unit.setCheckOutOn(checkOut);
 
 				unit.setCheckIn(occupiedDate);
 				unit.setNameReserving(name);
