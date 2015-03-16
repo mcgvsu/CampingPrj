@@ -1,9 +1,14 @@
 package package1;
 
 import java.io.*;
-import java.text.*;
-import java.util.*;
-
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Scanner;
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 
@@ -45,31 +50,33 @@ public class SiteModel extends AbstractTableModel {
 			return null;
 		}
 	}
-
+	
 	@Override
 	public String getColumnName(int col) {
 		return columnNames[col];
 	}
-
+	
 	public SiteModel() {
 		super();
 		siteList = new ArrayList<Site>();
 	}
-
+	
 	public void removeSite(int i) {
 		siteList.remove(i);
+		Collections.sort(siteList);
 		fireTableRowsDeleted(0, siteList.size());
 	}
-
+	
 	public void addSite(Site inputSite) {
 		siteList.add(inputSite);
+		Collections.sort(siteList);
 		fireTableRowsInserted(0, siteList.size());
 	}
-
+	
 	public Object getObject(int i) {
 		return siteList.get(i);
 	}
-		
+	
 	public boolean checkSite(Site n) {
 		int inputSiteNum = n.getSiteNumber();
 		for (int i = 0; i < siteList.size(); i++) {
@@ -78,7 +85,7 @@ public class SiteModel extends AbstractTableModel {
 		}
 		return true;
 	}
-
+	
 	public boolean checkDates(Site n) {
 		GregorianCalendar inN = n.getCheckIn();
 		GregorianCalendar outN = n.getCheckOutOn();
@@ -110,7 +117,8 @@ public class SiteModel extends AbstractTableModel {
 			ex.printStackTrace();
 		}
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	public void loadDB(String filename) {
 		try {
 			FileInputStream fi = new FileInputStream(filename);
@@ -122,7 +130,7 @@ public class SiteModel extends AbstractTableModel {
 			ex.printStackTrace();
 		}
 	}
-
+	
 	public void saveText(String filename) {
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(
@@ -193,7 +201,7 @@ public class SiteModel extends AbstractTableModel {
 			ex.printStackTrace();
 		}
 	}
-
+	
 	public ArrayList<Site> getSiteList() {
 		return siteList;
 	}
