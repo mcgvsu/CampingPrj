@@ -1,35 +1,67 @@
+/**********************************************************************
+Model used to represent a table of Sites.
+
+@author Conner Toney
+@author Mike Kolarik
+@version GVSU Winter 2015
+ *********************************************************************/
+
 package package1;
 
 import java.io.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Scanner;
+import java.text.*;
+import java.util.*;
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 
 public class SiteModel extends AbstractTableModel {
 
+	/** default serial ID */
 	private static final long serialVersionUID = 1L;
-	private ArrayList<Site> siteList;
-	private String[] columnNames = {"Name", "Checked-In", "Days Staying", "Site #", "Misc"};
 
+	/** list of Sites */
+	private ArrayList<Site> siteList;
+
+	/** names used for column header */
+	private String[] columnNames = {"Name", "Checked-In", 
+			"Days Staying", "Site #", "Misc"};
+
+	/******************************************************************
+	Default constructor that calls super() and creates siteList
+	 *****************************************************************/
+	public SiteModel() {
+		super();
+		siteList = new ArrayList<Site>();
+	}
+
+	/******************************************************************
+	Gets the number of columns
+	@return the number of columns
+	 *****************************************************************/
 	@Override
 	public int getColumnCount() {
 		return columnNames.length;
 	}
 
+	/******************************************************************
+	Gets the number of rows
+	@return the number of rows
+	 *****************************************************************/
 	@Override
 	public int getRowCount() {
 		return siteList.size();
 	}
 
+	/******************************************************************
+	Gets the value in table at the position of (row, col)
+	@param row row where value is contained
+	@param col column where value is contained
+	@return the value at (row, col)
+	 *****************************************************************/
 	@Override
 	public Object getValueAt(int row, int col) {
+		
+		//the siteList retrieves info dependent on column number
 		switch (col) {
 		case 0:
 			return siteList.get(row).getNameReserving();
@@ -42,153 +74,220 @@ public class SiteModel extends AbstractTableModel {
 			return siteList.get(row).getSiteNumber();
 		case 4:
 			if (siteList.get(row) instanceof RV) 
-				return ("Power: " + ((RV) siteList.get(row)).getPower());
-
+				return ("Power: " 
+						+ ((RV) siteList.get(row)).getPower());
 			else
-				return ("Occupants: " + ((Tent) siteList.get(row)).getNumOfTenters());
+				return ("Occupants: " 
+						+ ((Tent) siteList.get(row)).getNumOfTenters());
 		default:
 			return null;
 		}
 	}
-	
+
+	/******************************************************************
+	Gets the name of the column
+	@param col column where the name is
+	@return the column name
+	 *****************************************************************/
 	@Override
 	public String getColumnName(int col) {
 		return columnNames[col];
 	}
-	
-	public SiteModel() {
-		super();
-		siteList = new ArrayList<Site>();
-	}
-	
-	public void removeSite(int i) {
-		siteList.remove(i);
-		Collections.sort(siteList);
+
+	/******************************************************************
+	Removes the Site at the index in siteList and updates table display
+	@param col column where the name is
+	 *****************************************************************/
+	public void removeSite(int index) {
+		siteList.remove(index);
 		fireTableRowsDeleted(0, siteList.size());
 	}
-	
+
+	/******************************************************************
+	Adds the given Site to siteList and updates table display
+	@param inputSite the Site to be added to siteList
+	 *****************************************************************/
 	public void addSite(Site inputSite) {
 		siteList.add(inputSite);
-		Collections.sort(siteList);
 		fireTableRowsInserted(0, siteList.size());
 	}
-	
-	public Object getObject(int i) {
-		return siteList.get(i);
+
+	/******************************************************************
+	Gets the Object at the given index
+	@param index the location of the Object
+	@return the Site at the given index
+	 *****************************************************************/
+	public Object getObject(int index) {
+		return siteList.get(index);
 	}
-	
-	public boolean checkSite(Site n) {
-		int inputSiteNum = n.getSiteNumber();
+
+	/******************************************************************
+	Checks if the given Site's site# is already taken
+	@param inputSite the Site being checked
+	@return true if site is free, false if site is not free
+	 *****************************************************************/
+	public boolean checkSite(Site inputSite) {
+		int inputSiteNum = inputSite.getSiteNumber();
 		for (int i = 0; i < siteList.size(); i++) {
 			if (siteList.get(i).getSiteNumber() == inputSiteNum)
 				return false;
 		}
 		return true;
 	}
-	
-	public boolean checkDates(Site n) {
-		GregorianCalendar inN = n.getCheckIn();
-		GregorianCalendar outN = n.getCheckOutOn();
-		
+
+	/******************************************************************
+	Checks for date availability by checking for overlaps
+	@param inputDate the date being checked
+	@return true if date is available, false if not
+	 *****************************************************************/
+	public boolean checkDates(Site inputDate) {
+		GregorianCalendar inputCal = inputDate.getCheckIn();
+		GregorianCalendar outputCal = inputDate.getCheckOutOn();
+
+		//checks for date availability
 		for (int i = 0; i < siteList.size(); i++) {
-			if (n.getSiteNumber() == siteList.get(i).getSiteNumber()) {
-				GregorianCalendar inI = siteList.get(i).getCheckIn();
-				GregorianCalendar outI = siteList.get(i).getCheckOutOn();
-				if (inN.before(inI) && outN.after(outI))
+			if (inputDate.getSiteNumber() == siteList.
+					get(i).getSiteNumber()) {
+				GregorianCalendar inputCal2;
+				inputCal2 = siteList.get(i).getCheckIn();
+				GregorianCalendar outputCal2;
+				outputCal2 = siteList.get(i).getCheckOutOn();
+				if (inputCal.before(inputCal2) 
+						&& outputCal.after(outputCal2))
 					return false;
-				if (inN.before(inI) && (outN.after(inI) && outN.before(outI)))
+				if (inputCal.before(inputCal2) 
+						&& (outputCal.after(inputCal2) 
+								&& outputCal.before(outputCal2)))
 					return false;
-				if (inN.after(inI) && outN.before(outI))
+				if (inputCal.after(inputCal2) 
+						&& outputCal.before(outputCal2))
 					return false;
-				if (inN.after(inI) && inN.before(outI))
+				if (inputCal.after(inputCal2) 
+						&& inputCal.before(outputCal2))
 					return false;
 			}
 		}
 		return true;
 	}
-	
+
+	/******************************************************************
+	Saves a serialized file of the table information
+	@param filename name of file to be saved
+	 *****************************************************************/
 	public void saveDB(String filename) {
 		try {
-			FileOutputStream fo = new FileOutputStream(filename);
-			ObjectOutputStream oo = new ObjectOutputStream(fo);
-			oo.writeObject(siteList);
-			oo.close();
+			FileOutputStream fileOutput;
+			fileOutput = new FileOutputStream(filename);
+			ObjectOutputStream objectOutput;
+			objectOutput = new ObjectOutputStream(fileOutput);
+			objectOutput.writeObject(siteList);
+			objectOutput.close();
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
 	}
-	
+
+	/******************************************************************
+	Loads a serialized file of the table information
+	@param filename name of file to be loaded
+	 *****************************************************************/
 	@SuppressWarnings("unchecked")
 	public void loadDB(String filename) {
 		try {
-			FileInputStream fi = new FileInputStream(filename);
-			ObjectInputStream oi = new ObjectInputStream(fi);
-			siteList = (ArrayList<Site>) oi.readObject();
+			FileInputStream fileInput = new FileInputStream(filename);
+			ObjectInputStream objectInput;
+			objectInput = new ObjectInputStream(fileInput);
+			siteList = (ArrayList<Site>) objectInput.readObject();
 			fireTableRowsInserted(0, siteList.size() -1);
-			oi.close();
+			objectInput.close();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-	
+
+	/******************************************************************
+	Saves a text file of the table information
+	@param filename name of file to be saved
+	 *****************************************************************/
 	public void saveText(String filename) {
 		try {
 			PrintWriter out = new PrintWriter(new BufferedWriter(
 					new FileWriter(filename)));
 			out.println(siteList.size());
+			
+			//iterates through siteList and prints out the Site
+			//info line by line
 			for (int i = 0; i < siteList.size(); i++) {
-				Site s = siteList.get(i);
-				out.println(s.getClass().getName());
-				out.println(s.getNameReserving());
+				Site tempSite = siteList.get(i);
+				out.println(tempSite.getClass().getName());
+				out.println(tempSite.getNameReserving());
 				out.println(DateFormat.getDateInstance(DateFormat.SHORT)
-						.format(s.getCheckIn().getTime()));
-				out.println(s.getDaysStaying());
-				out.println(s.getSiteNumber());
-				if (s instanceof Tent)
-					out.println(((Tent) s).getNumOfTenters());
+						.format(tempSite.getCheckIn().getTime()));
+				out.println(tempSite.getDaysStaying());
+				out.println(tempSite.getSiteNumber());
+				if (tempSite instanceof Tent)
+					out.println(((Tent) tempSite).getNumOfTenters());
 				else
-					out.println(((RV) s).getPower());
+					out.println(((RV) tempSite).getPower());
 			}
 			out.close();
 		} catch (IOException ex) {
-			JOptionPane.showMessageDialog(null, "Loading error!");
+			JOptionPane.showMessageDialog(null, "Saving error!");
 		}
 	}
 
+	/******************************************************************
+	Loads a text file of the table information
+	@return filename name of file to be loaded
+	 *****************************************************************/
 	public void loadText(String filename) {
+		
+		//beings by clearing what is essentially the table
 		siteList.clear();
 		fireTableRowsDeleted(0, siteList.size());
 
 		try {
-			Scanner sc = new Scanner(new File(filename));
-			int count = Integer.parseInt(sc.nextLine().trim());
+			Scanner scan = new Scanner(new File(filename));
+			int count = Integer.parseInt(scan.nextLine().trim());
+			
+			//reads through the file line by line
 			for (int i = 0; i < count; i++) {
-				String type = sc.nextLine().trim();
-				String name = sc.nextLine().trim();
+				String type = scan.nextLine().trim();
+				String name = scan.nextLine().trim();
 
+				//parses for date
 				GregorianCalendar dateRes = new GregorianCalendar();
 				try {
-					DateFormat f = new SimpleDateFormat("MM/dd/yyyy");
-					Date d = f.parse(sc.nextLine().trim());
+					DateFormat format;
+					format = new SimpleDateFormat("MM/dd/yyyy");
+					Date tempDate;
+					tempDate = format.parse(scan.nextLine().trim());
 					dateRes = new GregorianCalendar();
-					dateRes.setTime(d);
+					dateRes.setTime(tempDate);
 				} catch (ParseException ex) {
 					ex.printStackTrace();
 				}
-				int days = Integer.parseInt(sc.nextLine().trim());
+				
+				//parses for days
+				int days = Integer.parseInt(scan.nextLine().trim());
 				GregorianCalendar dateOut = new GregorianCalendar();
-				int siteNum = Integer.parseInt(sc.nextLine().trim());
+				
+				//parses for site number
+				int siteNum = Integer.parseInt(scan.nextLine().trim());
 
+				//if tent, parses for number of tenters and sets
+				//the parsed information into a Tent object
+				//ELSE sets parsed information into RV object
 				if (type.contains("Tent")) {
 					int numTenters = 
-							Integer.parseInt(sc.nextLine().trim());
-					Tent t = new Tent(name, dateRes, days, dateOut,
-							siteNum, numTenters);
-					siteList.add(t);
+							Integer.parseInt(scan.nextLine().trim());
+					Tent tempTent = new Tent(name, dateRes, days, 
+							dateOut, siteNum, numTenters);
+					siteList.add(tempTent);
 					fireTableRowsInserted(siteList.size() - 1,
 							siteList.size() - 1);
 				} else {
-					int pow = Integer.parseInt(sc.nextLine().trim());
+					int pow = Integer.parseInt(scan.nextLine().trim());
 					RV rv = new RV (name, dateRes, days, dateOut,
 							siteNum, pow);
 					siteList.add(rv);
@@ -196,16 +295,23 @@ public class SiteModel extends AbstractTableModel {
 							siteList.size() - 1);
 				}
 			}
-			sc.close();
+			scan.close();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-	
+
+	/******************************************************************
+	Gets the list of Sites
+	@return siteList
+	 *****************************************************************/
 	public ArrayList<Site> getSiteList() {
 		return siteList;
 	}
-	
+
+	/******************************************************************
+	Sorts the list of Sites
+	 *****************************************************************/
 	public void sortList() {
 		Collections.sort(siteList);
 	}
