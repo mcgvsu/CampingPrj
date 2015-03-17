@@ -1,6 +1,6 @@
 /**********************************************************************
- * Tent class used to construct an RV object by calling upon its parent
- * class. Also contains methods which are only applicable to tent sites
+ * RV class used to construct an RV object by calling upon its parent
+ * class. Also contains methods which are only applicable to RV sites
  * @author Conner Toney & Michael Kolarik
  * @version March 2015
  *********************************************************************/
@@ -9,63 +9,62 @@ package package1;
 
 import java.util.GregorianCalendar;
 
-public class Tent extends Site {
+public class RV extends Site {
 
 	private static final long serialVersionUID = 1L;
 	
-	/** Number of occupants on the Site */
-	private int numOfOccupants;
+	/** Power supplied to the Site */
+	private int power; //30, 40, 50
 
 	/******************************************************************
-	 * Default tent constructor, immediately calls parent
+	 * Default RV constructor, immediately calls parent
 	 *****************************************************************/
-	public Tent() {
+	public RV() {
 		super();
 	}
 
 	/******************************************************************
-	 * Tent constructor which sets all relevant properties for a tent
-	 * Calls parent class with all properties but number of occupants, 
-	 * which is exclusive to a tent site
+	 * RV constructor which sets all relevant properties for an RV site
+	 * Calls parent class with all properties but power, which is 
+	 * exclusive to an RV site
 	 * @param nameReserving name tied to site at check-in
 	 * @param checkIn calendar object for check-in date
 	 * @param daysStaying desired amount of time to stay checked in
 	 * @param checkOutOn estimated day for checkout
 	 * @param siteNumber the site which will be occupied by this site
-	 * @param numofTenters the number of people staying on this site
+	 * @param power the desired amount of power required for this site
 	 *****************************************************************/
-	public Tent(String nameReserving, GregorianCalendar checkIn,
+	public RV(String nameReserving, GregorianCalendar checkIn,
 			int daysStaying, GregorianCalendar checkOutOn,
-			int siteNumber, int numOfTenters) {
+			int siteNumber, int power) {
 		super(nameReserving, checkIn, daysStaying, checkOutOn,
 				siteNumber);
-		this.numOfOccupants = numOfTenters;
+		this.power = power;
 	}
 
 	/******************************************************************
-	 * Gets the number of tenters on this site
-	 * @return numOfOccupants the number of people staying
+	 * Gets the power supplied to this RV site
+	 * @return power the power for this site
 	 *****************************************************************/
-	public int getNumOfTenters() {
-		return numOfOccupants;
+	public int getPower() {
+		return power;
 	}
 
 	/******************************************************************
-	 * Sets the number of tenters for this site
-	 * @param numOfTenters the number of occupants
+	 * Sets the required power to be supplied to this RV site
+	 * @param power the power desired for this site
 	 *****************************************************************/
-	public void setNumOfTenters(int numOfTenters) {
-		this.numOfOccupants = numOfTenters;
+	public void setPower(int power) {
+		this.power = power;
 	}
 
 	/******************************************************************
 	 * Method which overrides parent method. Calculates the cost of the
-	 * site based upon days staying, number of occupants and base
-	 * tent site cost
-	 * @return cost of staying
+	 * site based upon days staying and base RV site cost
+	 * @return the cost of staying
 	 *****************************************************************/
 	@Override
 	public double getCost() {
-		return ((3 * daysStaying) * numOfOccupants);
+		return (30 * daysStaying);
 	}
 }
