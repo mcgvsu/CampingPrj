@@ -1,55 +1,87 @@
+/**********************************************************************
+ * GUI class for for camping registration program. Creates and
+ * instantiates all components of the interface.
+ * @author Conner Toney & Michael Kolarik
+ * @version March 2015
+ *********************************************************************/
+
 package package1;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.awt.event.*;
+import java.text.*;
+import java.util.*;
+
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
 
 public class GUICampingReg extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
-
+	/** Menu bar for top of window */
 	private JMenuBar menubar;
 
-	//menus
+	/** File menu for saving, loading, sorting, and closing */
 	private JMenu fileMenu;
+
+	/** Check in menu for registering new tent/rv sites */
 	private JMenu checkInMenu;
+
+	/** Check out menu for releasing sites */
 	private JMenu checkOutMenu;
+
+	/** Status menu for obtaining status of all sites */
 	private JMenu statusMenu;
 
-	//file menu
+	/** Menu item to open serialized database */
 	private JMenuItem openSerialItem;
+
+	/** Menu item for saving serialized database */
 	private JMenuItem saveSerialItem;
+
+	/** Menu item for opening text database */
 	private JMenuItem openTextItem;
+
+	/** Menu item for saving text database */
 	private JMenuItem saveTextItem;
+
+	/** Menu item to exit the program */
 	private JMenuItem exitItem;
+
+	/** Menu item for sorting sites */
 	private JMenuItem sortItem;
 
-
-	//check in menu
+	/** Menu item to check-in new tent site */
 	private JMenuItem checkInTentItem;
+
+	/** Menu item to check-in new RV site */
 	private JMenuItem checkInRVItem;
 
-	//check out menu
+	/** Menu item to check out a site */
 	private JMenuItem checkOutItem;
 
-	//status menu
+	/** Menu item to obtain camp site status */
 	private JMenuItem statusItem;
 
-	//table stuff
+	/** A table for managing/organizing sites */
 	private JTable table;
+
+	/** Model which will control all table functions */
 	private SiteModel tableModel;
+
+	/** Scroll pane to navigate list */
 	private JScrollPane scrollPane;
-		
+
+	/******************************************************************
+	 * Method for instantiating all GUI elements and setting various
+	 * window properties
+	 *****************************************************************/
 	public void createGUI() {
+		//Causes fram to close when 'x' is clicked
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		//Setting title of window
 		setTitle("Reservations");
+
+		//Instantiating all menu items and respective listeners
 		menubar = new JMenuBar();
 		fileMenu = new JMenu("File");
 		checkInMenu = new JMenu("Check in");
@@ -75,6 +107,8 @@ public class GUICampingReg extends JFrame implements ActionListener {
 		statusItem.addActionListener(this);
 		sortItem = new JMenuItem("Sort by site...");
 		sortItem.addActionListener(this);
+
+		//Adding all elements to menus
 		menubar.add(fileMenu);
 		fileMenu.add(openSerialItem);
 		fileMenu.add(saveSerialItem);
@@ -93,132 +127,127 @@ public class GUICampingReg extends JFrame implements ActionListener {
 		statusMenu.add(statusItem);
 		menubar.add(statusMenu);
 		tableModel = new SiteModel();
-		
-		table = new JTable(tableModel) {
-			private static final long serialVersionUID = 1L;
-
-			public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
-				Component c = super.prepareRenderer(renderer, row, col);
-
-				for (int i = 0; i < table.getRowCount(); i++) {
-					Site tempSite = (Site) tableModel.getObject(i);
-					if (row == i) {
-						if (tempSite instanceof RV) {
-							c.setBackground(Color.LIGHT_GRAY);
-						}
-						else
-							c.setBackground(Color.WHITE);
-					}
-				}
-
-				return c;
-			}
-		};
+		table = new JTable(tableModel);
 		scrollPane = new JScrollPane(table);
-		add(scrollPane);		
+		add(scrollPane);
 		setJMenuBar(menubar);
+
+		//Setting default size and visibility
 		setSize(500, 200);
 		setVisible(true);
 	}
 
+	/******************************************************************
+	 * Method used to detect which item was clicked and what methods
+	 * to perform in each case
+	 * @param e the event for each clicked item
+	 *****************************************************************/
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		//Opens serialized db
 		if (e.getSource() == openSerialItem) {
-			tableModel.saveDB("reservations");
+			tableModel.saveDB("res_ser");
 		}
+		//Saves db to serialized file
 		if (e.getSource() == saveSerialItem) {
-			tableModel.loadDB("reservations");
+			tableModel.loadDB("res_ser");
 		}
+		//Opens text db
 		if (e.getSource() == openTextItem) {
-			//TODO open text file
+			tableModel.loadText("res_text.txt");
 		}
+		//Saves db to text file
 		if (e.getSource() == saveTextItem) {
-			//TODO save text file
+			tableModel.saveText("res_text.txt");
 		}
+		//Exits window
 		if (e.getSource() == exitItem) 
 			System.exit(0);
-
+		//Checks in a new tent site
 		if (e.getSource() == checkInTentItem) {
-			if (tableModel.getRowCount() == 5)
-				JOptionPane.showMessageDialog(null, "All sites are occupied");
-			else {
-				//creates new Tent object
-				Tent unit = new Tent();
-				//creates new Dialog for Tent, sends Tent object to Dialog
-				DialogCheckInTent tentDialog = new DialogCheckInTent(this, unit);
-				tentDialog.setVisible(true);
-				if (tentDialog.getCloseStatus() == 1) {
-					if (tableModel.checkSite(unit) == false) {
-						if (tableModel.checkDates(unit) == true) {
-							tableModel.addSite(unit);
-							JOptionPane.showMessageDialog(null,"Estimated cost:"
-									+ "$" + unit.getCost(), "Estimated Cost",
-									JOptionPane.INFORMATION_MESSAGE);
-						}
-						else
-							JOptionPane.showMessageDialog(null,
-									"Sorry, this site is occupied.");						
-					}
-					else {
+			//creates new RV object
+			Tent unit = new Tent();
+			//creates new Dialog for RV, sends RV object to Dialog
+			DialogCheckInTent tentDialog = 
+					new DialogCheckInTent(this, unit);
+			tentDialog.setVisible(true);
+			if (tentDialog.getCloseStatus() == 1) {
+				//If site is available and desired dates don't conflict
+				//only then will a new site be allowed
+				if (tableModel.checkSite(unit) == false) {
+					if (tableModel.checkDates(unit) == true) {
 						tableModel.addSite(unit);
-						JOptionPane.showMessageDialog(null,"Estimated cost:"
-								+ "$" + unit.getCost(), "Estimated Cost",
+						//Present window with estimated cost
+						JOptionPane.showMessageDialog
+						(null,"Estimated cost:"+"$"+ unit.getCost(),
+								"Estimated Cost",
 								JOptionPane.INFORMATION_MESSAGE);
 					}
+					//If site/date conflict, block site, inform user
+					else
+						JOptionPane.showMessageDialog(null,
+								"Sorry, this site is occupied.");						
+				} else {
+					tableModel.addSite(unit);
+					JOptionPane.showMessageDialog
+					(null,"Estimated cost:"
+							+ "$" + unit.getCost(),"Estimated Cost",
+							JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
-
 		}
+		//Checks in new RV site
 		if (e.getSource() == checkInRVItem) {
-			if (tableModel.getRowCount() == 5)
-				JOptionPane.showMessageDialog(null, "All sites are occupied");
-			else {
-				//creates new RV object
-				RV unit = new RV();
-				//creates new Dialog for RV, sends RV object to Dialog
-				DialogCheckInRV RVDialog = new DialogCheckInRV(this, unit);
-				RVDialog.setVisible(true);
-				if (RVDialog.getCloseStatus() == 1) {
-					if (tableModel.checkSite(unit) == false) {
-						if (tableModel.checkDates(unit) == true) {
-							tableModel.addSite(unit);
-							JOptionPane.showMessageDialog(null,"Estimated cost:"
-									+ "$" + unit.getCost(), "Estimated Cost",
-									JOptionPane.INFORMATION_MESSAGE);
-						}
-						else
-							JOptionPane.showMessageDialog(null,
-									"Sorry, this site is occupied.");						
-					}
-					else {
+			//creates new RV object
+			RV unit = new RV();
+			//creates new Dialog for RV, sends RV object to Dialog
+			DialogCheckInRV RVDialog = new DialogCheckInRV(this, unit);
+			RVDialog.setVisible(true);
+			if (RVDialog.getCloseStatus() == 1) {
+				//If site is available and desired dates don't conflict
+				//only then will a new site be allowed
+				if (tableModel.checkSite(unit) == false) {
+					if (tableModel.checkDates(unit) == true) {
 						tableModel.addSite(unit);
-						JOptionPane.showMessageDialog(null,"Estimated cost:"
-								+ "$" + unit.getCost(), "Estimated Cost",
+						//Present window with estimated cost
+						JOptionPane.showMessageDialog
+						(null,"Estimated cost:"+"$"+ unit.getCost(),
+								"Estimated Cost",
 								JOptionPane.INFORMATION_MESSAGE);
 					}
+					//If site/date conflict, block site, inform user
+					else
+						JOptionPane.showMessageDialog(null,
+								"Sorry, this site is occupied.");						
+				}
+				else {
+					tableModel.addSite(unit);
+					JOptionPane.showMessageDialog(null,"Estimated cost:"
+							+ "$" + unit.getCost(), "Estimated Cost",
+							JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
 		}
-
-
+		//Checking out camp sites
 		if (e.getSource() == checkOutItem) {
-
-			//gets selected Site and creates a temp site equal to that Site
+			//gets selected Site and creates an equal temp site
 			int index = table.getSelectedRow();
 			Site tempSite = (Site) tableModel.getObject(index);
 
-			//stuff for JOptionPane
+			//Fields for JOptionPane
 			JTextField dateTxtField = new JTextField(10);
 			JPanel inputDatePanel = new JPanel();
 			inputDatePanel.add(dateTxtField);
 			GregorianCalendar outDate = new GregorianCalendar();
-
-			int result = JOptionPane.showConfirmDialog(null, inputDatePanel, 
+			//Pop up window to input checkout ate
+			int result = JOptionPane.showConfirmDialog
+					(null, inputDatePanel, 
 					"Enter date: ", JOptionPane.OK_CANCEL_OPTION);
 
 			//only removes Site if input is correct + OK is selected
 			if (result == JOptionPane.OK_OPTION) {
-				SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+				SimpleDateFormat dateFormat = 
+						new SimpleDateFormat("MM/dd/yyyy");
 				Date date;
 				try {
 
@@ -226,8 +255,9 @@ public class GUICampingReg extends JFrame implements ActionListener {
 					date = dateFormat.parse(dateTxtField.getText());
 					outDate.setTime(date);
 
-					//gets time difference of date checked out vs checked in
-					long diff = outDate.getTimeInMillis() - tempSite.getCheckIn().getTimeInMillis();
+					//time difference of date checked out vs checked in
+					long diff = outDate.getTimeInMillis() - 
+							tempSite.getCheckIn().getTimeInMillis();
 					int days = (int) (diff / (24 * 60 * 60 * 1000));
 					if (days < 0)
 						tempSite.setDaysStaying(0);
@@ -242,21 +272,27 @@ public class GUICampingReg extends JFrame implements ActionListener {
 					tableModel.removeSite(index);
 				}
 				catch (ParseException ex) {
-					JOptionPane.showMessageDialog(null, "Incorrect date input!");
+					JOptionPane.showMessageDialog
+					(null, "Incorrect date input!");
 				}
 			}
 		}
-
+		//Shows status of all sites based on an inputted date
 		if (e.getSource() == statusItem) {
-			DialogGetDateStatus DateDialog = new DialogGetDateStatus(this, tableModel.getSiteList());
+			DialogGetDateStatus DateDialog =new DialogGetDateStatus
+					(this, tableModel.getSiteList());
 			DateDialog.setVisible(true);
 		}
-		
+		//Uses table model to call sorting (polymorphic)
 		if (e.getSource() == sortItem) {
 			tableModel.sortList();
 		}
 	}
 
+	/******************************************************************
+	 * Main method used to create new GUI instance
+	 * @param args
+	 *****************************************************************/	
 	public static void main(String[] args) {
 		GUICampingReg g = new GUICampingReg();
 		g.createGUI();
